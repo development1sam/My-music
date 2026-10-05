@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calcul Décolletage - Ingelec V12</title>
+    <title>Gestion et Décolletage - Ingelec (42 Articles)</title>
     <style>
         :root {
             --primary-color: #1a252f;
@@ -12,108 +12,292 @@
             --warning-color: #e67e22;
             --danger-color: #e74c3c;
             --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
         }
-        body { background-color: var(--bg-color); font-family: system-ui, sans-serif; margin: 0; padding-bottom: 40px; }
-        .navbar { background: var(--primary-color); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .tabs-nav { display: flex; background: #fff; border-bottom: 2px solid #ddd; max-width: 1200px; margin: 15px auto 0; padding: 0 15px; gap: 10px; overflow-x: auto; }
-        .tab-btn { padding: 12px 20px; border: none; background: none; font-size: 0.95rem; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
-        .tab-btn.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-        .page-content { display: none; }
-        .page-content.active { display: block; }
-        .card { background: #fff; padding: 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .form-group { margin-bottom: 14px; }
-        .form-group input, .form-group select { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
-        .shape-drawing-box { background: #fff; border: 2px dashed #bdc3c7; border-radius: 8px; padding: 15px; text-align: center; margin: 12px 0; display: flex; flex-direction: column; align-items: center; }
-        .formula-box { background: #fff8e1; border: 1px solid #ffe082; padding: 12px; border-radius: 8px; margin-top: 12px; color: #5d4037; }
-        .info-box { background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; text-align: center; }
-        .btn-submit { width: 100%; background: var(--success-color); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .table-container { max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f2f4f5; position: sticky; top: 0; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #333;
+            padding-bottom: 40px;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .navbar h1 {
+            font-size: 1.1rem;
+        }
+
+        .btn-reset-db {
+            background: #7f8c8d;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .tabs-nav {
+            display: flex;
+            background: #ffffff;
+            border-bottom: 2px solid #e0e0e0;
+            max-width: 1200px;
+            margin: 15px auto 0;
+            padding: 0 15px;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            border-bottom: 2px solid #eef2f5;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cccccc;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .select-list {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid var(--accent-color);
+            background-color: #f0f8ff;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .details-panel {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 8px;
+            border-left: 5px solid var(--accent-color);
+            margin-top: 15px;
+        }
+
+        .info-row {
+            margin-bottom: 8px;
+            font-size: 0.92rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--success-color);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+
+        .btn-delete {
+            background: var(--danger-color);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .table-container {
+            max-height: 450px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f2f4f5;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .btn-table-edit {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
     <header class="navbar">
-        <h2>⚙️ Décolletage Ingelec V12</h2>
-        <button onclick="resetDefaultDB()" style="background:#7f8c8d; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">🔄 Réinitialiser</button>
+        <h1>⚙️ Décolletage Ingelec - Gestion des Articles</h1>
+        <button class="btn-reset-db" onclick="resetDefaultDB()">🔄 Réinitialiser (إعادة ضبط)</button>
     </header>
 
-    <!-- شريط الصفحات -->
     <nav class="tabs-nav">
-        <button class="tab-btn active" onclick="switchPage('page_search')">🔍 1. البحث والحساب السريع</button>
-        <button class="tab-btn" onclick="switchPage('page_production')">🧮 2. حسابات الإنتاج</button>
-        <button class="tab-btn" onclick="switchPage('page_database')">📋 3. قاعدة البيانات والفرز</button>
-        <button class="tab-btn" onclick="switchPage('page_add_edit')">➕ 4. إضافة / تعديل المراجع</button>
+        <button class="tab-btn active" onclick="switchPage('page_search')">🔍 1. البحث والمعاينة</button>
+        <button class="tab-btn" onclick="switchPage('page_database')">📋 2. قائمة المراجع والتصنيف</button>
+        <button class="tab-btn" onclick="switchPage('page_add_edit')">➕ 3. إضافة / تعديل مرجع</button>
     </nav>
 
     <main class="container">
-        <!-- 1. صفحة البحث والمعاينة -->
+
+        <!-- الصفحة الأولى: البحث والمعاينة -->
         <section id="page_search" class="page-content active">
             <div class="card">
-                <h3>🔍 Recherche Article & Profil (البحث والمعاينة الهندسية)</h3>
+                <h2>🔍 Recherche & Inspection Article (البحث والمعاينة)</h2>
+                
                 <div class="form-group">
-                    <label>Sélectionner un Article:</label>
-                    <select id="dropdown_select" style="border: 2px solid #3498db; background: #f0f8ff; font-weight: bold;"></select>
-                </div>
-                <div class="form-group">
-                    <label>Ou saisir Ref Article / Ref Matière:</label>
-                    <input type="text" id="search_input" list="ref_list" placeholder="Ex: B0301400, B0301500, P1315400...">
-                    <datalist id="ref_list"></datalist>
-                </div>
-                <div id="details_panel" style="background: #f8f9fa; padding: 18px; border-radius: 8px; border-left: 5px solid #3498db;">
-                    <p>Désignation: <strong id="res_des_art">-</strong> | Ref Mat: <strong id="res_ref_mat">-</strong></p>
-                    <div class="shape-drawing-box" id="svg_container">اختر مرجعاً لعرض الرسم الهندسي</div>
-                    <div class="formula-box" id="formula_text">اختر مرجعاً لعرض حساب المساحة والكثافة</div>
-                    <div class="grid-2" style="margin-top:10px;">
-                        <div><label>Densité (g/cm³):</label><input type="number" id="input_densite_calc" step="0.01" value="8.35"></div>
-                        <div><label>Longueur Brut (mm):</label><input type="number" id="custom_long_brut" step="0.1" value="20.00"></div>
-                    </div>
-                    <div class="grid-3" style="margin-top:10px;">
-                        <div class="info-box"><small>Poids Brut</small><p><span id="res_poids_brut">0.00</span> g</p></div>
-                        <div class="info-box"><small>Poids Net</small><p><span id="res_poids_net">0.00</span> g</p></div>
-                        <div class="info-box"><small>Chute Perdue</small><p><span id="res_chute_total">0.00</span> g</p></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. صفحة حسابات الإنتاج -->
-        <section id="page_production" class="page-content">
-            <div class="card">
-                <h3>🧮 Calculateur de Production</h3>
-                <div class="form-group">
-                    <label>Mode de Calcul:</label>
-                    <select id="calc_mode">
-                        <option value="net">1. Sur Pièces Finies (Poids Net) - لحساب عدد القطع الجاهزة</option>
-                        <option value="brut">2. Sur Matière Première (Poids Brut) - لحساب الخام المستهلك</option>
+                    <label for="dropdown_select">Sélectionner un Article (اختر المرجع من القائمة):</label>
+                    <select id="dropdown_select" class="select-list" onchange="selectFromDropdown(this.value)">
+                        <option value="">-- Chargement des articles... --</option>
                     </select>
                 </div>
-                <div class="grid-2">
-                    <div class="form-group"><label>Poids Pesé (Kg):</label><input type="number" id="poids_input_kg" step="0.001"></div>
-                    <div class="form-group"><label>Nombre de Pièces:</label><input type="number" id="nombre_pieces"></div>
+
+                <div class="details-panel" id="details_panel">
+                    <div class="info-row"><span>Ref Article:</span> <strong id="res_ref_art">-</strong></div>
+                    <div class="info-row"><span>Désignation Article:</span> <strong id="res_des_art">-</strong></div>
+                    <div class="info-row"><span>Poids Net:</span> <strong id="res_poids_net">-</strong> g</div>
+                    <div class="info-row"><span>Ref Matière:</span> <strong id="res_ref_mat">-</strong></div>
+                    <div class="info-row"><span>Désignation Matière:</span> <strong id="res_des_mat">-</strong></div>
+
+                    <div class="grid-2" style="margin-top: 15px;">
+                        <button type="button" class="btn-submit" style="background:#3498db;" onclick="goToEditCurrent()">✏️️ Classer / Modifier (تصنيف وتعديل)</button>
+                    </div>
                 </div>
-                <div id="calc_explanation_text" style="padding:15px; background:#eaf2f8; border-radius:8px;">أدخل الوزن للقطعة المحددة لحساب القطع والرايش.</div>
             </div>
         </section>
 
-        <!-- 3. صفحة قاعدة البيانات والفرز -->
+        <!-- الصفحة الثانية: القائمة والتصنيف -->
         <section id="page_database" class="page-content">
             <div class="card">
-                <h3>📋 Liste des Articles (<span id="count_db">0</span>)</h3>
-                <div class="grid-2" style="margin-bottom:15px;">
-                    <input type="text" id="filter_ref_art" placeholder="Filtrer par Ref Article..." oninput="renderTable()">
-                    <input type="text" id="filter_ref_mat" placeholder="Filtrer par Ref Matière..." oninput="renderTable()">
-                </div>
+                <h2>📋 Liste des Articles (<span id="count_db">0</span>)</h2>
+
                 <div class="table-container">
                     <table>
                         <thead>
-                            <tr><th>Ref Article</th><th>Désignation</th><th>Ref Mat.</th><th>Forme</th><th>Actions</th></tr>
+                            <tr>
+                                <th>Ref Article</th>
+                                <th>Désignation Article</th>
+                                <th>Poids Net (g)</th>
+                                <th>Ref Matière</th>
+                                <th>Actions</th>
+                            </tr>
                         </thead>
                         <tbody id="table_body"></tbody>
                     </table>
@@ -121,43 +305,163 @@
             </div>
         </section>
 
-        <!-- 4. صفحة الإضافة والتعديل -->
+        <!-- الصفحة الثالثة: تعديل وتصنيف مرجع -->
         <section id="page_add_edit" class="page-content">
             <div class="card">
-                <h3 id="form_title">➕ Ajouter / Modifier un Article</h3>
-                <form id="articleForm" onsubmit="saveOrUpdateArticle(event)">
+                <h2 id="form_title">➕ Modifier / Classer un Article</h2>
+                
+                <form id="articleForm" onsubmit="saveArticle(event)">
                     <input type="hidden" id="edit_original_ref">
-                    <div class="grid-2">
-                        <div class="form-group"><label>Ref Article:</label><input type="text" id="add_ref_art" required></div>
-                        <div class="form-group"><label>Désignation Article:</label><input type="text" id="add_des_art" required></div>
-                    </div>
-                    <div class="grid-2">
-                        <div class="form-group"><label>Ref Matière:</label><input type="text" id="add_ref_mat" required></div>
-                        <div class="form-group"><label>Désignation Matière:</label><input type="text" id="add_des_mat" required></div>
-                    </div>
+                    
                     <div class="grid-2">
                         <div class="form-group">
-                            <label>Forme:</label>
-                            <select id="add_forme_mat">
-                                <option value="carre">مربع (Carré 5.5x5.5)</option>
-                                <option value="rect">مستطيل (Rectangle)</option>
-                                <option value="hexagone">مسدس 6 أوجه (Hexagone S=5mm)</option>
-                                <option value="composite_b0302500">مركبة: مكور + مربع (Composite B0302500)</option>
-                                <option value="rond">دائري / مكورة (Rond)</option>
-                            </select>
+                            <label>Ref Article:</label>
+                            <input type="text" id="add_ref_art" required>
                         </div>
-                        <div class="form-group"><label>Densité (g/cm³):</label><input type="number" id="add_densite" step="0.01" value="8.35" required></div>
+                        <div class="form-group">
+                            <label>Désignation Article:</label>
+                            <input type="text" id="add_des_art" required>
+                        </div>
                     </div>
+
                     <div class="grid-2">
-                        <div class="form-group"><label>Section (mm²):</label><input type="number" id="add_section" step="0.01" required></div>
-                        <div class="form-group"><label>Poids Net (g):</label><input type="number" id="add_poids_net" step="0.001" required></div>
+                        <div class="form-group">
+                            <label>Poids Net (g):</label>
+                            <input type="number" id="add_poids_net" step="0.001" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Ref Matière (مرجع المادة الخام):</label>
+                            <input type="text" id="add_ref_mat" placeholder="Ex: B0301400">
+                        </div>
                     </div>
-                    <div class="form-group"><label>Longueur Brut STD (mm):</label><input type="number" id="add_long_brut" step="0.01" value="20.00" required></div>
-                    <button type="submit" class="btn-submit">💾 Enregistrer (حفظ البيانات)</button>
+
+                    <div class="form-group">
+                        <label>Désignation Matière (اسم ووصف المادة الخام):</label>
+                        <input type="text" id="add_des_mat" placeholder="Ex: CuZn36Pb3 Profil 5.5x5.5">
+                    </div>
+
+                    <div class="grid-2">
+                        <button type="submit" class="btn-submit">💾 Enregistrer (حفظ والتصنيف)</button>
+                        <button type="button" class="btn-delete" style="background:#7f8c8d;" onclick="clearForm()">✖️ Annuler (إلغاء)</button>
+                    </div>
                 </form>
             </div>
         </section>
-    </main>
-</body>
-  </html>
 
+    </main>
+
+    <script>
+        const initialData = [
+            {"ref_article": "P1322200", "des_article": "BROCHE FICHE MAL PROJET", "poids_net": 4.06, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1304000", "des_article": "Broche de terre tichka2", "poids_net": 4.78, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1304200", "des_article": "BROCHE std français", "poids_net": 5.26, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1303200", "des_article": "Borne poussoir Rond STD", "poids_net": 1.48, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1303300", "des_article": "Borne centrale D.A.", "poids_net": 1.58, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1303900", "des_article": "Borne centrale S.A.", "poids_net": 1.56, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1322500", "des_article": "Borne centrale Musik2", "poids_net": 1.55, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1322400", "des_article": "Borne extreme chanfrein 30° Musik2", "poids_net": 1.34, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1318900", "des_article": "Borne Borne extreme chanfrein 30° Tichka2", "poids_net": 1.38, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1313800", "des_article": "Borne Extreme Tichka2", "poids_net": 1.44, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1319100", "des_article": "Borne Hex Douille B22", "poids_net": 1.55, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1316900", "des_article": "Borne Extreme SE/VV INTER", "poids_net": 1.05, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1316800", "des_article": "Borne Centrale SA/VV INTER", "poids_net": 1.06, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1315400", "des_article": "Borne Centrale Duo", "poids_net": 1.8, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1315500", "des_article": "Borne Extreme INTER Duo", "poids_net": 1.636, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1316500", "des_article": "Borne Fiche 4141", "poids_net": 2.34, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1314200", "des_article": "Broche de Terre Zenith", "poids_net": 4.75, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1315300", "des_article": "Borne Centrale DP Tichka2", "poids_net": 1.61, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1303100", "des_article": "Borne Prise TV", "poids_net": 2.05, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0401500", "des_article": "BORNE METALLIQUE 25mm²", "poids_net": 17.5, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0401600", "des_article": "BORNE METALLIQUE 35mm²", "poids_net": 22.28, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0401700", "des_article": "BORNE METALLIQUE 50mm²", "poids_net": 31, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0401800", "des_article": "BORNE METALLIQUE 70mm²", "poids_net": 43.83, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0401900", "des_article": "BORNE METALLIQUE 95mm²", "poids_net": 71, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0402000", "des_article": "BORNE METALLIQUE 120mm²", "poids_net": 93.2, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0705200", "des_article": "TUBE NEUTRE 22X58", "poids_net": 30.1, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0705300", "des_article": "TUBE NEUTRE 14X51", "poids_net": 16.42, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0711600", "des_article": "VIS SANS TETE M10X7", "poids_net": 3.4, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0711700", "des_article": "VIS SANS TETE M12X8.5", "poids_net": 6, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0711800", "des_article": "VIS SANS TETE M14X10.5", "poids_net": 9.9, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1203100", "des_article": "AXE D'ACCROCHAGE CI3S", "poids_net": 8.4, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1309000", "des_article": "BORNE BLOC 100A 4M", "poids_net": 24.18, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1309100", "des_article": "BORNE BLOC 40A 6M", "poids_net": 38.8, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1309200", "des_article": "BORNE BLOC TETRA 125A 6M", "poids_net": 35.5, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1309300", "des_article": "BORNE BLOC BI 125A 8M", "poids_net": 48, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1309400", "des_article": "BORNE BLOC TETRA 125A 8M", "poids_net": 48, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1322700", "des_article": "BORNE BLOC 63A 4M", "poids_net": 21.8, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P1314100", "des_article": "Barre neutre 12D", "poids_net": 100, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0316400", "des_article": "Borne coff modulaire L36", "poids_net": 11.28, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "P0316500", "des_article": "Borne coff modulaire L56", "poids_net": 16.32, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "Q1711500", "des_article": "platine jade (safir)", "poids_net": 21.82, "ref_matiere": "", "des_matiere": ""},
+            {"ref_article": "Q1713000", "des_article": "platine alyans", "poids_net": 18.3, "ref_matiere": "", "des_matiere": ""}
+        ];
+
+        let database = [];
+        let currentSelected = null;
+
+        function init() {
+            let saved = localStorage.getItem("my_articles_db");
+            database = saved ? JSON.parse(saved) : [...initialData];
+            saveData();
+            refresh();
+        }
+
+        function saveData() {
+            localStorage.setItem("my_articles_db", JSON.stringify(database));
+        }
+
+        function resetDefaultDB() {
+            if (confirm("إعادة ضبط القائمة؟")) {
+                database = [...initialData];
+                saveData();
+                refresh();
+            }
+        }
+
+        function refresh() {
+            let select = document.getElementById("dropdown_select");
+            select.innerHTML = '<option value="">-- اختر مرجعاً --</option>';
+            database.forEach(item => {
+                let opt = document.createElement("option");
+                opt.value = item.ref_article;
+                opt.textContent = `${item.ref_article} - ${item.des_article}`;
+                select.appendChild(opt);
+            });
+
+            let tbody = document.getElementById("table_body");
+            tbody.innerHTML = "";
+            database.forEach(item => {
+                let tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong>${item.ref_article}</strong></td>
+                    <td>${item.des_article}</td>
+                    <td>${item.poids_net} g</td>
+                    <td>${item.ref_matiere ? item.ref_matiere : '<span class="badge-warning">غير محدد</span>'}</td>
+                    <td><button class="btn-table-edit" onclick="editArticle('${item.ref_article}')">تعديل/تصنيف</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById("count_db").innerText = database.length;
+        }
+
+        function switchPage(id) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function selectFromDropdown(ref) {
+            currentSelected = database.find(x => x.ref_article === ref);
+            if (currentSelected) {
+                document.getElementById("res_ref_art").innerText = currentSelected.ref_article;
+                document.getElementById("res_des_art").innerText = currentSelected.des_article;
+                document.getElementById("res_poids_net").innerText = currentSelected.poids_net;
+                document.getElementById("res_ref_mat").innerText = currentSelected.ref_matiere || "غير محدد";
+                document.getElementById("res_des_mat").innerText = currentSelected.des_matiere || "غير محدد";
+            }
+        }
+
+        function editArticle(ref) {
+            let item = database.find(x => x.ref_article === ref);
+            if
