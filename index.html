@@ -1,1 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcul Décolletage - Ingelec V12</title>
+    <style>
+        :root {
+            --primary-color: #1a252f;
+            --accent-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+            --bg-color: #f4f6f9;
+        }
+        body { background-color: var(--bg-color); font-family: system-ui, sans-serif; margin: 0; padding-bottom: 40px; }
+        .navbar { background: var(--primary-color); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .tabs-nav { display: flex; background: #fff; border-bottom: 2px solid #ddd; max-width: 1200px; margin: 15px auto 0; padding: 0 15px; gap: 10px; overflow-x: auto; }
+        .tab-btn { padding: 12px 20px; border: none; background: none; font-size: 0.95rem; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .page-content { display: none; }
+        .page-content.active { display: block; }
+        .card { background: #fff; padding: 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+        .shape-drawing-box { background: #fff; border: 2px dashed #bdc3c7; border-radius: 8px; padding: 15px; text-align: center; margin: 12px 0; display: flex; flex-direction: column; align-items: center; }
+        .formula-box { background: #fff8e1; border: 1px solid #ffe082; padding: 12px; border-radius: 8px; margin-top: 12px; color: #5d4037; }
+        .info-box { background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; text-align: center; }
+        .btn-submit { width: 100%; background: var(--success-color); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .table-container { max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f2f4f5; position: sticky; top: 0; }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <h2>⚙️ Décolletage Ingelec V12</h2>
+        <button onclick="resetDefaultDB()" style="background:#7f8c8d; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">🔄 Réinitialiser</button>
+    </header>
+
+    <!-- شريط الصفحات -->
+    <nav class="tabs-nav">
+        <button class="tab-btn active" onclick="switchPage('page_search')">🔍 1. البحث والحساب السريع</button>
+        <button class="tab-btn" onclick="switchPage('page_production')">🧮 2. حسابات الإنتاج</button>
+        <button class="tab-btn" onclick="switchPage('page_database')">📋 3. قاعدة البيانات والفرز</button>
+        <button class="tab-btn" onclick="switchPage('page_add_edit')">➕ 4. إضافة / تعديل المراجع</button>
+    </nav>
+
+    <main class="container">
+        <!-- 1. صفحة البحث والمعاينة -->
+        <section id="page_search" class="page-content active">
+            <div class="card">
+                <h3>🔍 Recherche Article & Profil (البحث والمعاينة الهندسية)</h3>
+                <div class="form-group">
+                    <label>Sélectionner un Article:</label>
+                    <select id="dropdown_select" style="border: 2px solid #3498db; background: #f0f8ff; font-weight: bold;"></select>
+                </div>
+                <div class="form-group">
+                    <label>Ou saisir Ref Article / Ref Matière:</label>
+                    <input type="text" id="search_input" list="ref_list" placeholder="Ex: B0301400, B0301500, P1315400...">
+                    <datalist id="ref_list"></datalist>
+                </div>
+                <div id="details_panel" style="background: #f8f9fa; padding: 18px; border-radius: 8px; border-left: 5px solid #3498db;">
+                    <p>Désignation: <strong id="res_des_art">-</strong> | Ref Mat: <strong id="res_ref_mat">-</strong></p>
+                    <div class="shape-drawing-box" id="svg_container">اختر مرجعاً لعرض الرسم الهندسي</div>
+                    <div class="formula-box" id="formula_text">اختر مرجعاً لعرض حساب المساحة والكثافة</div>
+                    <div class="grid-2" style="margin-top:10px;">
+                        <div><label>Densité (g/cm³):</label><input type="number" id="input_densite_calc" step="0.01" value="8.35"></div>
+                        <div><label>Longueur Brut (mm):</label><input type="number" id="custom_long_brut" step="0.1" value="20.00"></div>
+                    </div>
+                    <div class="grid-3" style="margin-top:10px;">
+                        <div class="info-box"><small>Poids Brut</small><p><span id="res_poids_brut">0.00</span> g</p></div>
+                        <div class="info-box"><small>Poids Net</small><p><span id="res_poids_net">0.00</span> g</p></div>
+                        <div class="info-box"><small>Chute Perdue</small><p><span id="res_chute_total">0.00</span> g</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. صفحة حسابات الإنتاج -->
+        <section id="page_production" class="page-content">
+            <div class="card">
+                <h3>🧮 Calculateur de Production</h3>
+                <div class="form-group">
+                    <label>Mode de Calcul:</label>
+                    <select id="calc_mode">
+                        <option value="net">1. Sur Pièces Finies (Poids Net) - لحساب عدد القطع الجاهزة</option>
+                        <option value="brut">2. Sur Matière Première (Poids Brut) - لحساب الخام المستهلك</option>
+                    </select>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group"><label>Poids Pesé (Kg):</label><input type="number" id="poids_input_kg" step="0.001"></div>
+                    <div class="form-group"><label>Nombre de Pièces:</label><input type="number" id="nombre_pieces"></div>
+                </div>
+                <div id="calc_explanation_text" style="padding:15px; background:#eaf2f8; border-radius:8px;">أدخل الوزن للقطعة المحددة لحساب القطع والرايش.</div>
+            </div>
+        </section>
+
+        <!-- 3. صفحة قاعدة البيانات والفرز -->
+        <section id="page_database" class="page-content">
+            <div class="card">
+                <h3>📋 Liste des Articles (<span id="count_db">0</span>)</h3>
+                <div class="grid-2" style="margin-bottom:15px;">
+                    <input type="text" id="filter_ref_art" placeholder="Filtrer par Ref Article..." oninput="renderTable()">
+                    <input type="text" id="filter_ref_mat" placeholder="Filtrer par Ref Matière..." oninput="renderTable()">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Ref Article</th><th>Désignation</th><th>Ref Mat.</th><th>Forme</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="table_body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. صفحة الإضافة والتعديل -->
+        <section id="page_add_edit" class="page-content">
+            <div class="card">
+                <h3 id="form_title">➕ Ajouter / Modifier un Article</h3>
+                <form id="articleForm" onsubmit="saveOrUpdateArticle(event)">
+                    <input type="hidden" id="edit_original_ref">
+                    <div class="grid-2">
+                        <div class="form-group"><label>Ref Article:</label><input type="text" id="add_ref_art" required></div>
+                        <div class="form-group"><label>Désignation Article:</label><input type="text" id="add_des_art" required></div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Ref Matière:</label><input type="text" id="add_ref_mat" required></div>
+                        <div class="form-group"><label>Désignation Matière:</label><input type="text" id="add_des_mat" required></div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Forme:</label>
+                            <select id="add_forme_mat">
+                                <option value="carre">مربع (Carré 5.5x5.5)</option>
+                                <option value="rect">مستطيل (Rectangle)</option>
+                                <option value="hexagone">مسدس 6 أوجه (Hexagone S=5mm)</option>
+                                <option value="composite_b0302500">مركبة: مكور + مربع (Composite B0302500)</option>
+                                <option value="rond">دائري / مكورة (Rond)</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Densité (g/cm³):</label><input type="number" id="add_densite" step="0.01" value="8.35" required></div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Section (mm²):</label><input type="number" id="add_section" step="0.01" required></div>
+                        <div class="form-group"><label>Poids Net (g):</label><input type="number" id="add_poids_net" step="0.001" required></div>
+                    </div>
+                    <div class="form-group"><label>Longueur Brut STD (mm):</label><input type="number" id="add_long_brut" step="0.01" value="20.00" required></div>
+                    <button type="submit" class="btn-submit">💾 Enregistrer (حفظ البيانات)</button>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+  </html>
 
